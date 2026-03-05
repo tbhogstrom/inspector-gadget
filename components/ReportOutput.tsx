@@ -17,7 +17,7 @@ const PRIORITY_CONFIG = {
   minor: { label: 'Minor', color: 'bg-yellow-50 border-yellow-200', badge: 'outline' as const },
 };
 
-function SFWCallBanner({ sfwCount }: { sfwCount: number }) {
+function SFWCallBanner({ sfwCount, services }: { sfwCount: number; services: string[] }) {
   if (sfwCount === 0) return null;
   return (
     <a
@@ -26,7 +26,7 @@ function SFWCallBanner({ sfwCount }: { sfwCount: number }) {
     >
       <div>
         <p className="font-semibold text-base">SFW can help with {sfwCount} item{sfwCount !== 1 ? 's' : ''} on this report</p>
-        <p className="text-blue-100 text-sm">Construction · Rot Repair · Siding · Decks · Painting & more</p>
+        <p className="text-blue-100 text-sm">{services.join(' · ')} · and more</p>
       </div>
       <div className="text-right shrink-0 ml-4">
         <p className="font-bold text-lg">(503) 563-2403</p>
@@ -80,7 +80,9 @@ export function ReportOutput({ result }: { result: AnalysisResult }) {
   const critical = result.issues.filter(i => i.priority === 'critical');
   const major = result.issues.filter(i => i.priority === 'major');
   const minor = result.issues.filter(i => i.priority === 'minor');
-  const sfwCount = result.issues.filter(i => i.sfw_relevant).length;
+  const sfwIssues = result.issues.filter(i => i.sfw_relevant);
+  const sfwCount = sfwIssues.length;
+  const sfwServices = [...new Set(sfwIssues.map(i => i.sfw_service).filter(Boolean) as string[])];
 
   return (
     <Card>
@@ -95,7 +97,7 @@ export function ReportOutput({ result }: { result: AnalysisResult }) {
         </p>
       </CardHeader>
       <CardContent className="space-y-3">
-        <SFWCallBanner sfwCount={sfwCount} />
+        <SFWCallBanner sfwCount={sfwCount} services={sfwServices} />
         <PrioritySection priority="critical" issues={critical} />
         <PrioritySection priority="major" issues={major} />
         <PrioritySection priority="minor" issues={minor} />
