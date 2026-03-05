@@ -35,7 +35,9 @@ export async function POST(req: NextRequest) {
     let text = '';
 
     if (extension === 'pdf') {
-      const { default: pdfParse } = await import('pdf-parse');
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      // @ts-ignore — import lib directly to avoid pdf-parse index.js loading a test file at eval time
+      const { default: pdfParse } = await import('pdf-parse/lib/pdf-parse.js');
       const result = await pdfParse(buffer);
       text = result.text;
     } else if (extension === 'txt') {
