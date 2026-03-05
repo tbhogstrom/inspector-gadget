@@ -35,9 +35,8 @@ export async function POST(req: NextRequest) {
     let text = '';
 
     if (extension === 'pdf') {
-      const { PDFParse } = await import('pdf-parse');
-      const parser = new PDFParse({ data: buffer });
-      const result = await parser.getText();
+      const { default: pdfParse } = await import('pdf-parse');
+      const result = await pdfParse(buffer);
       text = result.text;
     } else if (extension === 'txt') {
       text = new TextDecoder().decode(buffer);
