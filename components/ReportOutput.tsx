@@ -17,12 +17,36 @@ const PRIORITY_CONFIG = {
   minor: { label: 'Minor', color: 'bg-yellow-50 border-yellow-200', badge: 'outline' as const },
 };
 
+function SFWCallBanner({ sfwCount }: { sfwCount: number }) {
+  if (sfwCount === 0) return null;
+  return (
+    <a
+      href="tel:5035632403"
+      className="flex items-center justify-between w-full rounded-lg bg-blue-600 hover:bg-blue-700 transition-colors p-4 text-white no-underline"
+    >
+      <div>
+        <p className="font-semibold text-base">SFW can help with {sfwCount} item{sfwCount !== 1 ? 's' : ''} on this report</p>
+        <p className="text-blue-100 text-sm">Construction · Rot Repair · Siding · Decks · Painting & more</p>
+      </div>
+      <div className="text-right shrink-0 ml-4">
+        <p className="font-bold text-lg">(503) 563-2403</p>
+        <p className="text-blue-100 text-xs">Tap to call</p>
+      </div>
+    </a>
+  );
+}
+
 function IssueCard({ issue }: { issue: Issue }) {
   const config = PRIORITY_CONFIG[issue.priority];
   return (
     <div className={`border rounded-lg p-4 space-y-2 ${config.color}`}>
-      <div className="flex items-center gap-2">
+      <div className="flex items-center gap-2 flex-wrap">
         <Badge variant={config.badge}>{issue.category}</Badge>
+        {issue.sfw_relevant && issue.sfw_service && (
+          <Badge variant="outline" className="border-blue-400 text-blue-700 bg-blue-50">
+            SFW: {issue.sfw_service}
+          </Badge>
+        )}
         <span className="text-xs text-gray-500">{issue.location}</span>
       </div>
       <p className="text-sm font-medium text-gray-800">{issue.description}</p>
@@ -56,6 +80,7 @@ export function ReportOutput({ result }: { result: AnalysisResult }) {
   const critical = result.issues.filter(i => i.priority === 'critical');
   const major = result.issues.filter(i => i.priority === 'major');
   const minor = result.issues.filter(i => i.priority === 'minor');
+  const sfwCount = result.issues.filter(i => i.sfw_relevant).length;
 
   return (
     <Card>
@@ -70,6 +95,7 @@ export function ReportOutput({ result }: { result: AnalysisResult }) {
         </p>
       </CardHeader>
       <CardContent className="space-y-3">
+        <SFWCallBanner sfwCount={sfwCount} />
         <PrioritySection priority="critical" issues={critical} />
         <PrioritySection priority="major" issues={major} />
         <PrioritySection priority="minor" issues={minor} />

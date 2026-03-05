@@ -5,6 +5,8 @@ export interface Issue {
   description: string;
   location: string;
   action: string;
+  sfw_relevant: boolean;
+  sfw_service: string | null;
 }
 
 export interface AnalysisResult {
