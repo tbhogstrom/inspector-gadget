@@ -1,6 +1,6 @@
-// components/HubSpotForm.tsx
 'use client';
 
+import { Info } from 'lucide-react';
 import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -29,7 +29,7 @@ export function HubSpotForm({ address, email }: Props) {
     return (
       <Card>
         <CardContent className="pt-6 text-center">
-          <p className="text-green-600 font-medium">Report sent to {formEmail}</p>
+          <p className="font-medium text-green-600">Report sent to {formEmail}</p>
         </CardContent>
       </Card>
     );
@@ -39,7 +39,7 @@ export function HubSpotForm({ address, email }: Props) {
     <Card>
       <CardHeader>
         <CardTitle className="text-lg">Email me this report</CardTitle>
-        <p className="text-sm text-gray-500">Review and confirm your details, then we'll send the report to your inbox.</p>
+        <p className="text-sm text-gray-500">Review and confirm your details, then we&apos;ll send the report to your inbox.</p>
       </CardHeader>
       <CardContent>
         <form onSubmit={handleSubmit} className="space-y-4">
@@ -48,8 +48,8 @@ export function HubSpotForm({ address, email }: Props) {
             <input
               type="text"
               value={formAddress}
-              onChange={e => setFormAddress(e.target.value)}
-              className="p-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm"
+              onChange={(e) => setFormAddress(e.target.value)}
+              className="rounded-lg border p-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
               placeholder="123 Main St, Springfield, IL"
             />
           </div>
@@ -58,13 +58,34 @@ export function HubSpotForm({ address, email }: Props) {
             <input
               type="email"
               value={formEmail}
-              onChange={e => setFormEmail(e.target.value)}
+              onChange={(e) => setFormEmail(e.target.value)}
               required
-              className="p-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm"
+              className="rounded-lg border p-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
               placeholder="you@email.com"
             />
           </div>
-          <Button type="submit" className="w-full">Send Report to My Inbox</Button>
+          <div className="space-y-2">
+            <Button type="submit" className="w-full">Send Report to My Inbox</Button>
+            <div className="flex justify-center">
+              <div className="group relative inline-flex items-center gap-2 text-center text-xs text-gray-500">
+                <span>Privacy notice</span>
+                <button
+                  type="button"
+                  aria-label="View inbox privacy notice"
+                  className="inline-flex h-5 w-5 items-center justify-center rounded-full border border-gray-300 bg-white text-gray-500 shadow-sm transition-colors hover:border-gray-400 hover:text-gray-700"
+                  onClick={(event) => event.stopPropagation()}
+                  onMouseDown={(event) => event.stopPropagation()}
+                >
+                  <Info className="h-3.5 w-3.5" />
+                </button>
+                <div className="pointer-events-none absolute left-1/2 top-full z-10 mt-2 hidden w-80 -translate-x-1/2 rounded-md border border-slate-200 bg-white p-3 text-left text-[11px] leading-5 text-slate-600 shadow-lg group-hover:block group-focus-within:block">
+                  By submitting, you acknowledge that your information may be routed through our CMS and automation
+                  software to deliver this report and follow up about highlighted services. Submission also authorizes
+                  SFW Construction and Painting to contact you for marketing related to those services.
+                </div>
+              </div>
+            </div>
+          </div>
         </form>
       </CardContent>
     </Card>
