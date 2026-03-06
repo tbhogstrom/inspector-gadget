@@ -78,7 +78,7 @@ export function HubSpotForm({ address, email }: Props) {
                 >
                   <Info className="h-3.5 w-3.5" />
                 </button>
-                <div className="pointer-events-none absolute left-1/2 top-full z-10 mt-2 hidden w-80 -translate-x-1/2 rounded-md border border-slate-200 bg-white p-3 text-left text-[11px] leading-5 text-slate-600 shadow-lg group-hover:block group-focus-within:block">
+                <div className="pointer-events-none absolute bottom-full left-1/2 z-10 mb-2 w-80 -translate-x-1/2 rounded-md border border-slate-200 bg-white p-3 text-left text-[11px] leading-5 text-slate-600 opacity-0 shadow-lg transition-all duration-150 group-hover:visible group-hover:translate-y-0 group-hover:opacity-100 group-focus-within:visible group-focus-within:translate-y-0 group-focus-within:opacity-100 invisible translate-y-1">
                   By submitting, you acknowledge that your information may be routed through our CMS and automation
                   software to deliver this report and follow up about highlighted services. Submission also authorizes
                   SFW Construction and Painting to contact you for marketing related to those services.
