@@ -1,6 +1,6 @@
-// components/UploadZone.tsx
 'use client';
 
+import { Info } from 'lucide-react';
 import { useDropzone } from 'react-dropzone';
 
 interface Props {
@@ -30,7 +30,7 @@ export function UploadZone({ onFile, disabled }: Props) {
       `}
     >
       <input {...getInputProps()} />
-      <div className="space-y-2">
+      <div className="space-y-3">
         <p className="text-lg font-medium text-gray-700">
           {isDragActive ? 'Drop your inspection report here' : 'Upload your inspection report'}
         </p>
@@ -38,6 +38,24 @@ export function UploadZone({ onFile, disabled }: Props) {
           Drag & drop a PDF or TXT file, or click to select
         </p>
         <p className="text-xs text-gray-400">Max 10MB</p>
+        <div className="flex justify-center">
+          <div className="group relative inline-flex items-center gap-2 text-xs text-gray-500">
+            <span>Privacy notice</span>
+            <button
+              type="button"
+              aria-label="View privacy notice"
+              className="inline-flex h-5 w-5 items-center justify-center rounded-full border border-gray-300 bg-white text-gray-500 shadow-sm transition-colors hover:border-gray-400 hover:text-gray-700"
+              onClick={(event) => event.stopPropagation()}
+              onMouseDown={(event) => event.stopPropagation()}
+            >
+              <Info className="h-3.5 w-3.5" />
+            </button>
+            <div className="pointer-events-none absolute left-1/2 top-full z-10 mt-2 hidden w-72 -translate-x-1/2 rounded-md border border-slate-200 bg-white p-3 text-left text-[11px] leading-5 text-slate-600 shadow-lg group-hover:block group-focus-within:block">
+              Uploaded reports are used only to generate this analysis. Avoid submitting highly sensitive personal
+              information, and confirm you have permission to share any report you upload.
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   );

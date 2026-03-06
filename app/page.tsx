@@ -9,6 +9,10 @@ import { AnalysisResult } from '@/lib/types';
 
 type AppState = 'upload' | 'processing' | 'results';
 
+function getErrorMessage(error: unknown) {
+  return error instanceof Error ? error.message : 'Something went wrong';
+}
+
 export default function Home() {
   const [state, setState] = useState<AppState>('upload');
   const [result, setResult] = useState<AnalysisResult | null>(null);
@@ -35,8 +39,8 @@ export default function Home() {
 
       setResult(analyzeBody);
       setState('results');
-    } catch (err: any) {
-      toast.error(err.message || 'Something went wrong');
+    } catch (error: unknown) {
+      toast.error(getErrorMessage(error));
       setState('upload');
     }
   };
@@ -57,7 +61,7 @@ export default function Home() {
           <div className="text-center py-16 space-y-3">
             <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-slate-800 mx-auto" />
             <p className="text-slate-600 font-medium">Analyzing your inspection report...</p>
-            <p className="text-slate-400 text-sm">This usually takes 15–30 seconds</p>
+            <p className="text-slate-400 text-sm">This usually takes 15-30 seconds</p>
           </div>
         )}
 
@@ -67,7 +71,7 @@ export default function Home() {
             <HubSpotForm address={result.address} email={result.client_email} />
             <button
               onClick={() => { setResult(null); setState('upload'); }}
-              className="w-full text-sm text-slate-400 hover:text-slate-600 underline"
+              className="w-full text-sm text-slate-400 underline hover:text-slate-600"
             >
               Analyze another report
             </button>
