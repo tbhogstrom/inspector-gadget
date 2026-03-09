@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { toast } from 'sonner';
 import { UploadZone } from '@/components/UploadZone';
 import { ReportOutput } from '@/components/ReportOutput';
@@ -15,6 +15,20 @@ function getErrorMessage(error: unknown) {
 
 export default function Home() {
   const [state, setState] = useState<AppState>('upload');
+
+  useEffect(() => {
+    const sendHeight = () => {
+      window.parent.postMessage({ iframeHeight: document.body.scrollHeight }, '*');
+    };
+    window.addEventListener('resize', sendHeight);
+    const observer = new ResizeObserver(sendHeight);
+    observer.observe(document.body);
+    sendHeight();
+    return () => {
+      window.removeEventListener('resize', sendHeight);
+      observer.disconnect();
+    };
+  }, []);
   const [result, setResult] = useState<AnalysisResult | null>(null);
 
   const handleFile = async (file: File) => {
