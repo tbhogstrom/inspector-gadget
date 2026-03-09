@@ -6,7 +6,7 @@ import './globals.css';
 const inter = Inter({ subsets: ['latin'] });
 
 export const metadata: Metadata = {
-  title: 'Inspector Gadget',
+  title: 'Free Home Inspection Repair Tool: Your Actionable Checklist',
   description: 'AI-powered home inspection report analyzer',
 };
 

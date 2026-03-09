@@ -49,7 +49,7 @@ export default function Home() {
     <main className="min-h-screen bg-gradient-to-b from-slate-50 to-slate-100 p-4">
       <div className="max-w-2xl mx-auto pt-8 space-y-6">
         <div className="text-center space-y-1">
-          <h1 className="text-3xl font-bold text-slate-900">Inspector Gadget</h1>
+          <h1 className="text-3xl font-bold text-slate-900">Your Actionable Inspection Checklist</h1>
           <p className="text-slate-500">Upload your inspection report and get a prioritized action list instantly.</p>
         </div>
 
