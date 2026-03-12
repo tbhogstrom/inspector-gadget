@@ -324,8 +324,8 @@ function buildPdfDocument(doc: Document, result: AnalysisResult, generatedAt: Da
   footer.style.color = '#334155';
   const phones = doc.createElement('div');
   [
-    ['Portland', '503-476-9460'],
-    ['Seattle', '206-203-2046'],
+    ['Oregon', '503-476-9460'],
+    ['Washington', '206-203-2046'],
   ].forEach(([label, value]) => {
     const row = doc.createElement('div');
     const strong = doc.createElement('strong');

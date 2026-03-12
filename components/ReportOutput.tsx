@@ -60,7 +60,7 @@ function SFWCallBanner({ sfwCount, services }: { sfwCount: number; services: str
               onClick={(event) => event.stopPropagation()}
               className="rounded-lg bg-white/12 p-3 no-underline transition-colors hover:bg-white/18"
             >
-              <p className="text-xs uppercase tracking-[0.18em] text-blue-100">Portland</p>
+              <p className="text-xs uppercase tracking-[0.18em] text-blue-100">Oregon</p>
               <p className="mt-2 flex items-center gap-2 text-lg font-bold text-white">
                 <Phone className="size-4" />
                 503-476-9460
@@ -72,7 +72,7 @@ function SFWCallBanner({ sfwCount, services }: { sfwCount: number; services: str
               onClick={(event) => event.stopPropagation()}
               className="rounded-lg bg-white/12 p-3 no-underline transition-colors hover:bg-white/18"
             >
-              <p className="text-xs uppercase tracking-[0.18em] text-blue-100">Seattle</p>
+              <p className="text-xs uppercase tracking-[0.18em] text-blue-100">Washington</p>
               <p className="mt-2 flex items-center gap-2 text-lg font-bold text-white">
                 <Phone className="size-4" />
                 206-203-2046
