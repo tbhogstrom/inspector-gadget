@@ -1,6 +1,6 @@
 'use client';
 
-import { ChevronDown } from 'lucide-react';
+import { ChevronDown, Phone } from 'lucide-react';
 import { useState } from 'react';
 import { Badge } from '@/components/ui/badge';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -18,24 +18,84 @@ const PRIORITY_CONFIG = {
 };
 
 function SFWCallBanner({ sfwCount, services }: { sfwCount: number; services: string[] }) {
+  const [expanded, setExpanded] = useState(false);
+
   if (sfwCount === 0) return null;
 
   const serviceSummary = services.length > 0 ? `${services.join(' | ')} | and more` : 'Recommended repair items';
 
   return (
-    <a
-      href="tel:5035632403"
-      className="flex w-full items-center justify-between rounded-lg bg-blue-600 p-4 text-white no-underline transition-colors hover:bg-blue-700"
+    <div
+      role="button"
+      tabIndex={0}
+      onClick={() => setExpanded((value) => !value)}
+      onKeyDown={(event) => {
+        if (event.key === 'Enter' || event.key === ' ') {
+          event.preventDefault();
+          setExpanded((value) => !value);
+        }
+      }}
+      className="w-full cursor-pointer rounded-xl bg-blue-600 p-4 text-left text-white transition-colors hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-300 focus:ring-offset-2"
     >
-      <div>
-        <p className="text-base font-semibold">SFW can help with {sfwCount} item{sfwCount !== 1 ? 's' : ''} on this report</p>
-        <p className="text-sm text-blue-100">{serviceSummary}</p>
+      <div className="flex items-start justify-between gap-4">
+        <div>
+          <p className="text-base font-semibold">SFW can help with {sfwCount} item{sfwCount !== 1 ? 's' : ''} on this report</p>
+          <p className="mt-1 text-sm text-blue-100">{serviceSummary}</p>
+        </div>
+        <div className="flex items-center gap-2 text-blue-100">
+          <span className="hidden text-xs font-medium sm:inline">{expanded ? 'Hide numbers' : 'Show both numbers'}</span>
+          <ChevronDown className={`size-4 transition-transform ${expanded ? 'rotate-180' : ''}`} />
+        </div>
       </div>
-      <div className="ml-4 shrink-0 text-right">
-        <p className="text-lg font-bold">(503) 563-2403</p>
-        <p className="text-xs text-blue-100">Tap to call</p>
+
+      <div
+        className={`grid overflow-hidden transition-[grid-template-rows,margin-top] duration-300 ease-out ${
+          expanded ? 'mt-4 grid-rows-[1fr]' : 'mt-3 grid-rows-[0fr]'
+        }`}
+      >
+        <div className="overflow-hidden">
+          <div className="grid gap-3 sm:grid-cols-2">
+            <a
+              href="tel:5034769460"
+              onClick={(event) => event.stopPropagation()}
+              className="rounded-lg bg-white/12 p-3 no-underline transition-colors hover:bg-white/18"
+            >
+              <p className="text-xs uppercase tracking-[0.18em] text-blue-100">Portland</p>
+              <p className="mt-2 flex items-center gap-2 text-lg font-bold text-white">
+                <Phone className="size-4" />
+                503-476-9460
+              </p>
+              <p className="text-xs text-blue-100">Tap to call</p>
+            </a>
+            <a
+              href="tel:2062032046"
+              onClick={(event) => event.stopPropagation()}
+              className="rounded-lg bg-white/12 p-3 no-underline transition-colors hover:bg-white/18"
+            >
+              <p className="text-xs uppercase tracking-[0.18em] text-blue-100">Seattle</p>
+              <p className="mt-2 flex items-center gap-2 text-lg font-bold text-white">
+                <Phone className="size-4" />
+                206-203-2046
+              </p>
+              <p className="text-xs text-blue-100">Tap to call</p>
+            </a>
+          </div>
+        </div>
       </div>
-    </a>
+
+      {!expanded && (
+        <div className="mt-3 text-right">
+          <a
+            href="tel:5035632403"
+            onClick={(event) => event.stopPropagation()}
+            className="inline-block no-underline"
+          >
+            <p className="text-lg font-bold text-white">(503) 563-2403</p>
+            <p className="text-xs text-blue-100">Tap to call</p>
+          </a>
+        </div>
+      )}
+    </div>
   );
 }
 

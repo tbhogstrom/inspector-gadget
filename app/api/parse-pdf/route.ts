@@ -4,16 +4,20 @@ import { NextRequest, NextResponse } from 'next/server';
 const MAX_SIZE_BYTES = 10 * 1024 * 1024; // 10MB
 const ALLOWED_EXTENSIONS = ['pdf', 'txt'];
 
+function isFileLike(value: FormDataEntryValue | null): value is Blob & { name?: string } {
+  return value instanceof Blob && typeof value.arrayBuffer === 'function';
+}
+
 export async function POST(req: NextRequest) {
   try {
     const formData = await req.formData();
     const fileEntry = formData.get('file');
 
-    if (!fileEntry || typeof (fileEntry as any).arrayBuffer !== 'function') {
+    if (!isFileLike(fileEntry)) {
       return NextResponse.json({ error: 'No file uploaded' }, { status: 400 });
     }
 
-    const file = fileEntry as Blob & { name?: string };
+    const file = fileEntry;
     const extension = file.name?.split('.').pop()?.toLowerCase() ?? '';
 
     if (!ALLOWED_EXTENSIONS.includes(extension)) {
@@ -52,9 +56,10 @@ export async function POST(req: NextRequest) {
     }
 
     return NextResponse.json({ text });
-  } catch (err: any) {
+  } catch (err: unknown) {
     console.error('parse-pdf error:', err);
-    return NextResponse.json({ error: err.message || 'Internal Server Error' }, { status: 500 });
+    const message = err instanceof Error ? err.message : 'Internal Server Error';
+    return NextResponse.json({ error: message }, { status: 500 });
   }
 }
 

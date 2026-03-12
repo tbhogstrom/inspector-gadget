@@ -2,9 +2,9 @@
 
 import { useState, useEffect } from 'react';
 import { toast } from 'sonner';
+import { PDFDownloadSection } from '@/components/PDFDownloadSection';
 import { UploadZone } from '@/components/UploadZone';
 import { ReportOutput } from '@/components/ReportOutput';
-import { HubSpotForm } from '@/components/HubSpotForm';
 import { AnalysisResult } from '@/lib/types';
 
 type AppState = 'upload' | 'processing' | 'results';
@@ -82,7 +82,7 @@ export default function Home() {
         {state === 'results' && result && (
           <>
             <ReportOutput result={result} />
-            <HubSpotForm address={result.address} email={result.client_email} />
+            <PDFDownloadSection result={result} />
             <button
               onClick={() => { setResult(null); setState('upload'); }}
               className="w-full text-sm text-slate-400 underline hover:text-slate-600"
