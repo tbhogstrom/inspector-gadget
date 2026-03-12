@@ -29,7 +29,10 @@ function normalizeDocxXml(xml: string) {
   return xml
     .replace(/<w:tab\b[^>]*\/>/g, '\t')
     .replace(/<w:br\b[^>]*\/>/g, '\n')
+    .replace(/<w:cr\b[^>]*\/>/g, '\n')
     .replace(/<\/w:p>/g, '\n')
+    .replace(/<\/w:tr>/g, '\n')
+    .replace(/<\/w:tc>/g, '\t')
     .replace(/<[^>]+>/g, '')
     .split('\n')
     .map((line) => decodeXmlEntities(line).replace(/\s+/g, ' ').trim())
@@ -44,13 +47,18 @@ export async function extractTextFromDocx(buffer: Buffer): Promise<string> {
 
   try {
     const zip = await JSZip.loadAsync(buffer);
-    const documentXml = await zip.file('word/document.xml')?.async('string');
+    const contentFiles = zip
+      .file(/^word\/(document|header\d+|footer\d+|footnotes|endnotes)\.xml$/)
+      .sort((left, right) => left.name.localeCompare(right.name));
 
-    if (!documentXml) {
+    if (contentFiles.length === 0) {
       throw new Error('Invalid DOCX file structure');
     }
 
-    const text = normalizeDocxXml(documentXml);
+    const sections = await Promise.all(
+      contentFiles.map(async (file) => normalizeDocxXml(await file.async('string')))
+    );
+    const text = sections.filter(Boolean).join('\n\n').trim();
 
     if (!text) {
       throw new Error('No text content found in DOCX file');

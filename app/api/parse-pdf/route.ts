@@ -37,6 +37,7 @@ export async function POST(req: NextRequest) {
     const arrayBuffer = await file.arrayBuffer();
     const buffer = Buffer.from(arrayBuffer);
     let text = '';
+    let extractionHint = '';
 
     if (extension === 'pdf') {
       // eslint-disable-next-line @typescript-eslint/ban-ts-comment
@@ -44,6 +45,7 @@ export async function POST(req: NextRequest) {
       const { default: pdfParse } = await import('pdf-parse/lib/pdf-parse.js');
       const result = await pdfParse(buffer);
       text = result.text;
+      extractionHint = 'If this PDF is a scan or image-only document, text extraction will fail without OCR.';
     } else if (extension === 'txt') {
       text = new TextDecoder().decode(buffer);
     } else if (extension === 'docx') {
@@ -51,9 +53,13 @@ export async function POST(req: NextRequest) {
       text = await extractTextFromDocx(buffer);
     }
 
-    if (!text || text.trim().length < 10) {
+    if (!text || !text.trim()) {
       return NextResponse.json(
-        { error: 'Could not extract text from this file. Try a different file.' },
+        {
+          error: extractionHint
+            ? `Could not extract text from this file. ${extractionHint}`
+            : 'Could not extract text from this file. Try a different file.',
+        },
         { status: 422 }
       );
     }
