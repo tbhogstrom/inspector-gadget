@@ -42,23 +42,23 @@ function groupIssuesByPriority(issues: Issue[]) {
   };
 }
 
-function createIssueCard(issue: Issue) {
+function createIssueCard(doc: Document, issue: Issue) {
   const style = PRIORITY_STYLES[issue.priority];
-  const wrapper = document.createElement('div');
+  const wrapper = doc.createElement('div');
   wrapper.style.border = `1px solid ${style.accent}`;
   wrapper.style.background = style.surface;
   wrapper.style.borderRadius = '12px';
   wrapper.style.padding = '16px';
   wrapper.style.marginBottom = '12px';
 
-  const meta = document.createElement('div');
+  const meta = doc.createElement('div');
   meta.style.display = 'flex';
   meta.style.flexWrap = 'wrap';
   meta.style.gap = '8px';
   meta.style.alignItems = 'center';
   meta.style.marginBottom = '10px';
 
-  const priority = document.createElement('span');
+  const priority = doc.createElement('span');
   priority.textContent = style.label;
   priority.style.display = 'inline-block';
   priority.style.padding = '4px 8px';
@@ -69,13 +69,13 @@ function createIssueCard(issue: Issue) {
   priority.style.fontSize = '12px';
   priority.style.fontWeight = '700';
 
-  const category = document.createElement('span');
+  const category = doc.createElement('span');
   category.textContent = issue.category;
   category.style.fontSize = '12px';
   category.style.fontWeight = '600';
   category.style.color = '#334155';
 
-  const location = document.createElement('span');
+  const location = doc.createElement('span');
   location.textContent = issue.location;
   location.style.fontSize = '12px';
   location.style.color = '#64748b';
@@ -83,7 +83,7 @@ function createIssueCard(issue: Issue) {
   meta.append(priority, category, location);
 
   if (issue.sfw_relevant && issue.sfw_service) {
-    const service = document.createElement('span');
+    const service = doc.createElement('span');
     service.textContent = `SFW Service: ${issue.sfw_service}`;
     service.style.fontSize = '12px';
     service.style.fontWeight = '600';
@@ -91,39 +91,39 @@ function createIssueCard(issue: Issue) {
     meta.append(service);
   }
 
-  const description = document.createElement('p');
+  const description = doc.createElement('p');
   description.textContent = issue.description;
   description.style.margin = '0 0 8px';
   description.style.fontSize = '14px';
   description.style.lineHeight = '1.6';
   description.style.color = '#0f172a';
 
-  const action = document.createElement('p');
+  const action = doc.createElement('p');
   action.style.margin = '0';
   action.style.fontSize = '14px';
   action.style.lineHeight = '1.6';
   action.style.color = '#334155';
-  const actionLabel = document.createElement('strong');
+  const actionLabel = doc.createElement('strong');
   actionLabel.textContent = 'Action: ';
-  const actionText = document.createTextNode(issue.action);
+  const actionText = doc.createTextNode(issue.action);
   action.append(actionLabel, actionText);
 
   wrapper.append(meta, description, action);
   return wrapper;
 }
 
-function createSection(title: string, subtitle: string, issues: Issue[]) {
-  const section = document.createElement('section');
+function createSection(doc: Document, title: string, subtitle: string, issues: Issue[]) {
+  const section = doc.createElement('section');
   section.style.marginTop = '28px';
 
-  const heading = document.createElement('h2');
+  const heading = doc.createElement('h2');
   heading.textContent = title;
   heading.style.margin = '0 0 4px';
   heading.style.fontSize = '20px';
   heading.style.fontWeight = '700';
   heading.style.color = '#0f172a';
 
-  const summary = document.createElement('p');
+  const summary = doc.createElement('p');
   summary.textContent = subtitle;
   summary.style.margin = '0 0 16px';
   summary.style.fontSize = '13px';
@@ -137,7 +137,7 @@ function createSection(title: string, subtitle: string, issues: Issue[]) {
     if (items.length === 0) return;
 
     const style = PRIORITY_STYLES[priority];
-    const groupTitle = document.createElement('h3');
+    const groupTitle = doc.createElement('h3');
     groupTitle.textContent = `${style.label} (${items.length})`;
     groupTitle.style.margin = '20px 0 10px';
     groupTitle.style.fontSize = '15px';
@@ -145,7 +145,7 @@ function createSection(title: string, subtitle: string, issues: Issue[]) {
     groupTitle.style.color = style.accent;
     section.append(groupTitle);
 
-    items.forEach((issue) => section.append(createIssueCard(issue)));
+    items.forEach((issue) => section.append(createIssueCard(doc, issue)));
   });
 
   return section;
@@ -174,22 +174,47 @@ async function loadLogoDataUrl() {
   }
 }
 
-function buildPdfDocument(result: AnalysisResult, generatedAt: Date, logoDataUrl: string | null) {
+function createPdfFrame() {
+  const frame = document.createElement('iframe');
+  frame.setAttribute('aria-hidden', 'true');
+  frame.style.position = 'fixed';
+  frame.style.right = '100%';
+  frame.style.top = '0';
+  frame.style.width = '900px';
+  frame.style.height = '1px';
+  frame.style.opacity = '0';
+  frame.style.pointerEvents = 'none';
+  frame.style.border = '0';
+  document.body.append(frame);
+
+  const doc = frame.contentDocument;
+  if (!doc) {
+    frame.remove();
+    throw new Error('Failed to prepare PDF document');
+  }
+
+  doc.open();
+  doc.write('<!doctype html><html><head><meta charset="utf-8"><title>Inspection PDF</title></head><body style="margin:0;background:#ffffff;"></body></html>');
+  doc.close();
+
+  return { frame, doc };
+}
+
+function buildPdfDocument(doc: Document, result: AnalysisResult, generatedAt: Date, logoDataUrl: string | null) {
   const sfwIssues = result.issues.filter((issue) => issue.sfw_relevant);
   const otherIssues = result.issues.filter((issue) => !issue.sfw_relevant);
 
-  const root = document.createElement('div');
-  root.style.position = 'fixed';
-  root.style.left = '-99999px';
-  root.style.top = '0';
+  const root = doc.createElement('div');
   root.style.width = '794px';
+  root.style.minHeight = '1123px';
   root.style.background = '#ffffff';
   root.style.color = '#0f172a';
   root.style.padding = '40px 44px';
   root.style.fontFamily = 'Arial, Helvetica, sans-serif';
   root.style.boxSizing = 'border-box';
+  root.style.lineHeight = '1.4';
 
-  const header = document.createElement('header');
+  const header = doc.createElement('header');
   header.style.display = 'flex';
   header.style.justifyContent = 'space-between';
   header.style.alignItems = 'flex-start';
@@ -197,9 +222,9 @@ function buildPdfDocument(result: AnalysisResult, generatedAt: Date, logoDataUrl
   header.style.paddingBottom = '24px';
   header.style.borderBottom = '2px solid #e2e8f0';
 
-  const brand = document.createElement('div');
+  const brand = doc.createElement('div');
   if (logoDataUrl) {
-    const logo = document.createElement('img');
+    const logo = doc.createElement('img');
     logo.src = logoDataUrl;
     logo.alt = 'SFW Construction logo';
     logo.style.width = '160px';
@@ -209,7 +234,7 @@ function buildPdfDocument(result: AnalysisResult, generatedAt: Date, logoDataUrl
     brand.append(logo);
   }
 
-  const tagline = document.createElement('p');
+  const tagline = doc.createElement('p');
   tagline.textContent = 'Exterior Home Repair Experts';
   tagline.style.margin = '0';
   tagline.style.fontSize = '18px';
@@ -217,7 +242,7 @@ function buildPdfDocument(result: AnalysisResult, generatedAt: Date, logoDataUrl
   tagline.style.color = '#1e3a8a';
   brand.append(tagline);
 
-  const meta = document.createElement('div');
+  const meta = doc.createElement('div');
   meta.style.minWidth = '250px';
   meta.style.fontSize = '13px';
   meta.style.lineHeight = '1.7';
@@ -226,29 +251,29 @@ function buildPdfDocument(result: AnalysisResult, generatedAt: Date, logoDataUrl
     ['Generated', formatTimestamp(generatedAt)],
     ['Total Issues', String(result.issues.length)],
   ].forEach(([label, value]) => {
-    const row = document.createElement('div');
-    const strong = document.createElement('strong');
+    const row = doc.createElement('div');
+    const strong = doc.createElement('strong');
     strong.textContent = `${label}: `;
-    row.append(strong, document.createTextNode(value));
+    row.append(strong, doc.createTextNode(value));
     meta.append(row);
   });
 
   header.append(brand, meta);
 
-  const intro = document.createElement('section');
+  const intro = doc.createElement('section');
   intro.style.marginTop = '24px';
   intro.style.padding = '20px';
   intro.style.background = '#eff6ff';
   intro.style.border = '1px solid #bfdbfe';
   intro.style.borderRadius = '16px';
 
-  const introTitle = document.createElement('h1');
+  const introTitle = doc.createElement('h1');
   introTitle.textContent = 'Inspection Analysis Report';
   introTitle.style.margin = '0 0 8px';
   introTitle.style.fontSize = '28px';
   introTitle.style.fontWeight = '800';
 
-  const introText = document.createElement('p');
+  const introText = doc.createElement('p');
   introText.textContent = 'Save this checklist for your next repair planning conversation or contractor walk-through.';
   introText.style.margin = '0';
   introText.style.fontSize = '14px';
@@ -258,6 +283,7 @@ function buildPdfDocument(result: AnalysisResult, generatedAt: Date, logoDataUrl
   intro.append(introTitle, introText);
 
   const issuesSection = createSection(
+    doc,
     'Issues by Priority',
     'All findings from the inspection report grouped from most urgent to least urgent.',
     result.issues,
@@ -268,6 +294,7 @@ function buildPdfDocument(result: AnalysisResult, generatedAt: Date, logoDataUrl
   if (sfwIssues.length > 0) {
     sections.push(
       createSection(
+        doc,
         'SFW Services',
         'Items flagged as work SFW can likely help address.',
         sfwIssues,
@@ -278,6 +305,7 @@ function buildPdfDocument(result: AnalysisResult, generatedAt: Date, logoDataUrl
   if (otherIssues.length > 0) {
     sections.push(
       createSection(
+        doc,
         'Other Issues',
         'Remaining findings not currently mapped to an SFW service.',
         otherIssues,
@@ -285,7 +313,7 @@ function buildPdfDocument(result: AnalysisResult, generatedAt: Date, logoDataUrl
     );
   }
 
-  const footer = document.createElement('footer');
+  const footer = doc.createElement('footer');
   footer.style.marginTop = '32px';
   footer.style.paddingTop = '20px';
   footer.style.borderTop = '2px solid #e2e8f0';
@@ -294,32 +322,32 @@ function buildPdfDocument(result: AnalysisResult, generatedAt: Date, logoDataUrl
   footer.style.gap = '16px';
   footer.style.fontSize = '13px';
   footer.style.color = '#334155';
-  const phones = document.createElement('div');
+  const phones = doc.createElement('div');
   [
     ['Portland', '503-476-9460'],
     ['Seattle', '206-203-2046'],
   ].forEach(([label, value]) => {
-    const row = document.createElement('div');
-    const strong = document.createElement('strong');
+    const row = doc.createElement('div');
+    const strong = doc.createElement('strong');
     strong.textContent = `${label}: `;
-    row.append(strong, document.createTextNode(value));
+    row.append(strong, doc.createTextNode(value));
     phones.append(row);
   });
 
-  const contact = document.createElement('div');
+  const contact = doc.createElement('div');
   contact.style.textAlign = 'right';
-  const contactLabel = document.createElement('div');
-  const contactStrong = document.createElement('strong');
+  const contactLabel = doc.createElement('div');
+  const contactStrong = doc.createElement('strong');
   contactStrong.textContent = 'Contact: ';
-  contactLabel.append(contactStrong, document.createTextNode('sfwconstruction.com/contact-us/'));
-  const contactUrl = document.createElement('div');
+  contactLabel.append(contactStrong, doc.createTextNode('sfwconstruction.com/contact-us/'));
+  const contactUrl = doc.createElement('div');
   contactUrl.textContent = CONTACT_URL;
   contact.append(contactLabel, contactUrl);
 
   footer.append(phones, contact);
 
   root.append(...sections, footer);
-  document.body.append(root);
+  doc.body.append(root);
 
   return root;
 }
@@ -327,7 +355,8 @@ function buildPdfDocument(result: AnalysisResult, generatedAt: Date, logoDataUrl
 export async function downloadInspectionPdf(result: AnalysisResult) {
   const generatedAt = new Date();
   const logoDataUrl = await loadLogoDataUrl();
-  const root = buildPdfDocument(result, generatedAt, logoDataUrl);
+  const { frame, doc } = createPdfFrame();
+  const root = buildPdfDocument(doc, result, generatedAt, logoDataUrl);
 
   try {
     const canvas = await html2canvas(root, {
@@ -335,6 +364,8 @@ export async function downloadInspectionPdf(result: AnalysisResult) {
       useCORS: true,
       backgroundColor: '#ffffff',
       logging: false,
+      windowWidth: root.scrollWidth,
+      windowHeight: root.scrollHeight,
     });
 
     const pdf = new jsPDF({
@@ -368,6 +399,6 @@ export async function downloadInspectionPdf(result: AnalysisResult) {
 
     return { filename };
   } finally {
-    root.remove();
+    frame.remove();
   }
 }

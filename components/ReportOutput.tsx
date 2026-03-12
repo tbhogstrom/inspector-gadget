@@ -42,8 +42,8 @@ function SFWCallBanner({ sfwCount, services }: { sfwCount: number; services: str
           <p className="text-base font-semibold">SFW can help with {sfwCount} item{sfwCount !== 1 ? 's' : ''} on this report</p>
           <p className="mt-1 text-sm text-blue-100">{serviceSummary}</p>
         </div>
-        <div className="flex items-center gap-2 text-blue-100">
-          <span className="hidden text-xs font-medium sm:inline">{expanded ? 'Hide numbers' : 'Show both numbers'}</span>
+        <div className="flex items-center gap-2 whitespace-nowrap text-blue-100">
+          <span className="text-xs font-medium">Tap to call</span>
           <ChevronDown className={`size-4 transition-transform ${expanded ? 'rotate-180' : ''}`} />
         </div>
       </div>
@@ -83,18 +83,6 @@ function SFWCallBanner({ sfwCount, services }: { sfwCount: number; services: str
         </div>
       </div>
 
-      {!expanded && (
-        <div className="mt-3 text-right">
-          <a
-            href="tel:5035632403"
-            onClick={(event) => event.stopPropagation()}
-            className="inline-block no-underline"
-          >
-            <p className="text-lg font-bold text-white">(503) 563-2403</p>
-            <p className="text-xs text-blue-100">Tap to call</p>
-          </a>
-        </div>
-      )}
     </div>
   );
 }
