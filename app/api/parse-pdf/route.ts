@@ -4,8 +4,8 @@ import { NextRequest, NextResponse } from 'next/server';
 const MAX_SIZE_BYTES = 10 * 1024 * 1024; // 10MB
 const ALLOWED_EXTENSIONS = ['pdf', 'txt'];
 
-function isFileLike(value: FormDataEntryValue | null): value is Blob & { name?: string } {
-  return value instanceof Blob && typeof value.arrayBuffer === 'function';
+function isFileLike(value: FormDataEntryValue | null): value is File {
+  return value instanceof File;
 }
 
 export async function POST(req: NextRequest) {
