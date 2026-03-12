@@ -2,7 +2,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 
 const MAX_SIZE_BYTES = 10 * 1024 * 1024; // 10MB
-const ALLOWED_EXTENSIONS = ['pdf', 'txt'];
+const ALLOWED_EXTENSIONS = ['pdf', 'txt', 'docx'];
 
 function isFileLike(value: FormDataEntryValue | null): value is File {
   return value instanceof File;
@@ -22,7 +22,7 @@ export async function POST(req: NextRequest) {
 
     if (!ALLOWED_EXTENSIONS.includes(extension)) {
       return NextResponse.json(
-        { error: 'Unsupported file type. Only PDF and TXT files are allowed.' },
+        { error: 'Unsupported file type. Only PDF, TXT, and DOCX files are allowed.' },
         { status: 400 }
       );
     }
@@ -46,6 +46,9 @@ export async function POST(req: NextRequest) {
       text = result.text;
     } else if (extension === 'txt') {
       text = new TextDecoder().decode(buffer);
+    } else if (extension === 'docx') {
+      const { extractTextFromDocx } = await import('@/lib/docx-parser');
+      text = await extractTextFromDocx(buffer);
     }
 
     if (!text || text.trim().length < 10) {

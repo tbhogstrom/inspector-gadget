@@ -6,14 +6,22 @@ import { useDropzone } from 'react-dropzone';
 interface Props {
   onFile: (file: File) => void;
   disabled?: boolean;
+  title?: string;
+  description?: string;
 }
 
-export function UploadZone({ onFile, disabled }: Props) {
+export function UploadZone({
+  onFile,
+  disabled,
+  title = 'Upload your inspection report',
+  description = 'Drag & drop a PDF, TXT, or DOCX file, or click to select',
+}: Props) {
   const { getRootProps, getInputProps, isDragActive } = useDropzone({
     onDrop: (files) => files[0] && onFile(files[0]),
     accept: {
       'application/pdf': [],
       'text/plain': [],
+      'application/vnd.openxmlformats-officedocument.wordprocessingml.document': [],
     },
     maxSize: 10 * 1024 * 1024,
     multiple: false,
@@ -32,10 +40,10 @@ export function UploadZone({ onFile, disabled }: Props) {
       <input {...getInputProps()} />
       <div className="space-y-3">
         <p className="text-lg font-medium text-gray-700">
-          {isDragActive ? 'Drop your inspection report here' : 'Upload your inspection report'}
+          {isDragActive ? 'Drop your file here' : title}
         </p>
         <p className="text-sm text-gray-500">
-          Drag & drop a PDF or TXT file, or click to select
+          {description}
         </p>
         <p className="text-xs text-gray-400">Max 10MB</p>
         <div className="flex justify-center">
