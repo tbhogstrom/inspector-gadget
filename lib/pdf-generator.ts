@@ -4,7 +4,7 @@ import html2canvas from 'html2canvas';
 import jsPDF from 'jspdf';
 import type { AnalysisResult, Issue } from '@/lib/types';
 
-const LOGO_URL = 'https://sfwconstruction.com/wp-content/uploads/2019/12/logo-footer.png';
+const LOGO_URL = 'https://sfwconstruction.com/wp-content/uploads/2019/09/logo.png';
 const CONTACT_URL = 'https://sfwconstruction.com/contact-us/';
 
 const PRIORITY_STYLES: Record<Issue['priority'], { label: string; accent: string; surface: string }> = {
