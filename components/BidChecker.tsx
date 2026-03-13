@@ -5,6 +5,7 @@ import { toast } from 'sonner';
 import { UploadZone } from '@/components/UploadZone';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { LoadingGame } from '@/components/LoadingGame';
 import { BidCheckerResult } from '@/lib/bid-checker-types';
 
 interface BidCheckerProps {
@@ -15,6 +16,8 @@ export function BidChecker({ onResults }: BidCheckerProps) {
   const [repairDescription, setRepairDescription] = useState('');
   const [bidFile, setBidFile] = useState<File | null>(null);
   const [isProcessing, setIsProcessing] = useState(false);
+  const [analysisReady, setAnalysisReady] = useState(false);
+  const [finalScore, setFinalScore] = useState(0);
 
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -57,12 +60,28 @@ export function BidChecker({ onResults }: BidCheckerProps) {
       }
 
       onResults(analyzeBody);
+      setAnalysisReady(true);
     } catch (error: unknown) {
       const message = error instanceof Error ? error.message : 'Something went wrong';
       toast.error(message);
     } finally {
       setIsProcessing(false);
     }
+  }
+
+  if (isProcessing) {
+    return (
+      <LoadingGame
+        isAnalysisComplete={analysisReady}
+        onGameEnd={(score) => {
+          setFinalScore(score);
+        }}
+        onViewResults={() => {
+          setIsProcessing(false);
+          setAnalysisReady(false);
+        }}
+      />
+    );
   }
 
   return (
