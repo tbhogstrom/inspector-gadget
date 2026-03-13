@@ -77,7 +77,7 @@ export class GameStateManager {
         id: `powerup-${this.nextObjectId++}`,
         type: 'energy-drink',
         x: 400, // Spawn on right side
-        y: Math.random() * (300 - POWERUP_CONFIG.height),
+        y: Math.random() * (300 - POWERUP_CONFIG.height), // Random Y for player to catch
         width: POWERUP_CONFIG.width,
         height: POWERUP_CONFIG.height,
         speed: getObstacleSpeed(this.metrics.elapsedTime),
@@ -92,7 +92,7 @@ export class GameStateManager {
         id: `obstacle-${this.nextObjectId++}`,
         type: type as 'brick' | 'barrier' | 'tool' | 'cone',
         x: 400, // Spawn on right side
-        y: Math.random() * (300 - OBSTACLE_CONFIG.height),
+        y: 150, // Same Y axis for all obstacles
         width: OBSTACLE_CONFIG.width,
         height: OBSTACLE_CONFIG.height,
         speed: getObstacleSpeed(this.metrics.elapsedTime),
