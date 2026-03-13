@@ -6,9 +6,9 @@ export const GAME_CONFIG: GameConfig = {
   canvasHeight: 300,
   workerStartX: 50,
   workerStartY: 150,
-  gravity: 0.6,
+  gravity: 0.3,
   jumpForce: 15,
-  jumpDuration: 400, // ms
+  jumpDuration: 600, // ms - longer jump window
 };
 
 export const OBSTACLE_CONFIG = {
