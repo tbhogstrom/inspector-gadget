@@ -13,6 +13,7 @@ module.exports = {
         jsx: 'react',
         esModuleInterop: true,
       },
+      useESM: false,
     }],
   },
 };
