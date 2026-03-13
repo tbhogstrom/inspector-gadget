@@ -4,7 +4,7 @@ import { GameConfig } from './types';
 export const GAME_CONFIG: GameConfig = {
   canvasWidth: 400,
   canvasHeight: 300,
-  workerStartX: 50,
+  workerStartX: 190, // Centered horizontally
   workerStartY: 150,
   gravity: 0.3,
   jumpForce: 15,
