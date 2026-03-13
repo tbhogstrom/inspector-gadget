@@ -152,7 +152,7 @@ export function GameCanvas({
 
         if (progress < 1) {
           // Parabolic arc: start high, come down
-          const jumpHeight = 80;
+          const jumpHeight = 90;
           const yOffset = -jumpHeight * (Math.sin(progress * Math.PI));
           setWorkerY(GAME_CONFIG.workerStartY + yOffset);
         } else {

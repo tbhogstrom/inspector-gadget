@@ -5,7 +5,7 @@ export const GAME_CONFIG: GameConfig = {
   canvasWidth: 400,
   canvasHeight: 300,
   workerStartX: 50,
-  workerStartY: 250,
+  workerStartY: 200,
   gravity: 0.6,
   jumpForce: 15,
   jumpDuration: 400, // ms
