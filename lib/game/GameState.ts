@@ -53,10 +53,10 @@ export class GameStateManager {
       1.0
     );
 
-    // Move objects
+    // Move objects (left across screen)
     this.objects = this.objects.filter((obj) => {
-      obj.y += (obj as any).speed;
-      return obj.y < 400; // Remove off-screen objects
+      obj.x -= (obj as any).speed;
+      return obj.x > -obj.width; // Remove off-screen objects (left side)
     });
 
     // Spawn new obstacles
@@ -76,8 +76,8 @@ export class GameStateManager {
       const powerUp: PowerUp = {
         id: `powerup-${this.nextObjectId++}`,
         type: 'energy-drink',
-        x: Math.random() * (400 - POWERUP_CONFIG.width),
-        y: -POWERUP_CONFIG.height,
+        x: 400, // Spawn on right side
+        y: Math.random() * (300 - POWERUP_CONFIG.height),
         width: POWERUP_CONFIG.width,
         height: POWERUP_CONFIG.height,
         speed: getObstacleSpeed(this.metrics.elapsedTime),
@@ -91,8 +91,8 @@ export class GameStateManager {
       const obstacle: Obstacle = {
         id: `obstacle-${this.nextObjectId++}`,
         type: type as 'brick' | 'barrier' | 'tool' | 'cone',
-        x: Math.random() * (400 - OBSTACLE_CONFIG.width),
-        y: -OBSTACLE_CONFIG.height,
+        x: 400, // Spawn on right side
+        y: Math.random() * (300 - OBSTACLE_CONFIG.height),
         width: OBSTACLE_CONFIG.width,
         height: OBSTACLE_CONFIG.height,
         speed: getObstacleSpeed(this.metrics.elapsedTime),
