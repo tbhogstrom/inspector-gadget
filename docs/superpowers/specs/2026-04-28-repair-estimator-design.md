@@ -111,7 +111,7 @@ export interface RepairEstimateResult {
 ### Schema rules
 
 - **Sections are an object with named keys** (not an array) so they always render in fixed order, and the seven required sections are always present. Empty sections use `lineItems: []` and `subtotal: 0`.
-- **Amounts are integers in USD.** Subtotals are recomputed client-side from line items as defensive insurance against model arithmetic drift.
+- **Amounts are integers in USD.** Subtotals are recomputed in the API route (server-side, before responding) from line items as defensive insurance against model arithmetic drift.
 - **Sales tax behavior:**
   - OR: `salesTax = null`, `salesTaxNote` omitted, `taxRule = 'OR - no sales tax'`.
   - WA: `salesTax = null` and `salesTaxNote = 'Sales tax (WA - rate TBD)'` when rate is unknown; otherwise `salesTax` is a positive integer.
@@ -154,7 +154,7 @@ Errors: 500 with `error: message`, log to console (existing pattern).
 
 ### Normalization (`normalizeRepairEstimate`)
 
-Defensive client-side cleanup that runs before the response leaves the API route:
+Defensive server-side cleanup that runs in the API route before the response is returned:
 
 1. Ensure all 7 section keys exist; missing keys → `{ lineItems: [], subtotal: 0 }`.
 2. Recompute each section's `subtotal` from its `lineItems` (overwrite model value).
